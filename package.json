@@ -1,0 +1,15 @@
+{
+  "name": "infoscreen",
+  "version": "1.0.0",
+  "description": "app for info sreen",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.rit:gudinov/infoScreen.git"
+  },
+  "author": "gudinov",
+  "license": "ISC"
+}
