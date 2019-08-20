@@ -27,13 +27,16 @@
             - ComponentName.jsx
             - constants.js
   - /utils
-    - utilsName.js
+     - utilsName.js
+
   - /pages
-    - /routerName
-        - routerName.js
-    rootRouter.js
+     - /routerName
+         - routerName.js
+     - rootRouter.js
+
   - /styles
-    - globalStyleName.css
+     - globalStyleName.css
+
   - index.jsx
   - index.html
 
