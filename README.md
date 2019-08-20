@@ -1,20 +1,20 @@
 # infoScreen
 
-Технологии
+Technology
 
   - SASS
   - HTML 5
   - WEBPACK 4
   - React 16
 
-### Project architecture
+### Project sctructure
 
-- /assets
-    - /typography
-        - fontsName.*
-    - /images
-        - imageName.*
 - /src
+    - /assets
+        - /typography
+            - fontsName.*
+        - /images
+            - imageName.*
   - /components
     - /UI
         - /UIComponentName
@@ -27,13 +27,13 @@
             - ComponentName.jsx
             - constants.js
   - /utils
-     - utilsName.js
+    - utilsName.js
   - /pages
-     - /routerName
-         - routerName.js
-     - rootRouter.js
+    - /routerName
+        - routerName.js
+    rootRouter.js
   - /styles
-     - globalStyleName.css
+    - globalStyleName.css
   - index.jsx
   - index.html
 
@@ -58,6 +58,23 @@ $ npm start
 Run eslint:
 ```sh
 $ npm run lint
+```
+Run to check the size and content of your bundled file:
+
+```sh
+$ npm run analyze
+```
+
+#### Testing
+You can run your tests using:
+
+```sh
+$ npm run test
+```
+Run to generate the code coverage of your code:
+
+```sh
+$ npm run test:coverage
 ```
 #### Building for source
 For production release:
