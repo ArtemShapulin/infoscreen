@@ -28,15 +28,12 @@
             - constants.js
   - /utils
      - utilsName.js
-
   - /pages
      - /routerName
          - routerName.js
      - rootRouter.js
-
   - /styles
      - globalStyleName.css
-
   - index.jsx
   - index.html
 
