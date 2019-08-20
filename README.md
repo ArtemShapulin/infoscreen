@@ -11,9 +11,9 @@
 
 - /assets
     - /typography
-        fontsName.*
+        - fontsName.*
     - /images
-        imageName.*
+        - imageName.*
 - /src
   - /components
     - /UI
