@@ -2,6 +2,7 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const SassLintPlugin = require('sass-lint-webpack')
 const common = require('./webpack.common.js');
 const portFinderSync = require('portfinder-sync');
 const port = portFinderSync.getPort(3042);
@@ -50,5 +51,6 @@ module.exports = merge(common, {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
+    new SassLintPlugin(),
   ],
 });
