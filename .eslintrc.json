@@ -19,6 +19,9 @@
     "rules": {
         "no-console": "warn",
         "max-len": ["error", {"code": 150}],
-        "jsx-a11y/click-events-have-key-events": "off"
+        "jsx-a11y/click-events-have-key-events": "off",
+        "react/forbid-prop-types": "off",
+        "import/no-unresolved": "off",
+        "react/prop-types": [2, { "ignore": ["children"] }]
     }
 }
