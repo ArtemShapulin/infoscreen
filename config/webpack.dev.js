@@ -2,15 +2,16 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const common = require('./webpack.common.js');
 const portFinderSync = require('portfinder-sync');
+const common = require('./webpack.common.js');
+
 const port = portFinderSync.getPort(3042);
 
 module.exports = merge(common, {
   mode: 'development',
   devtool: 'inline-source-map',
   devServer: {
-    port: port,
+    port,
     historyApiFallback: true,
     overlay: true,
     open: true,
