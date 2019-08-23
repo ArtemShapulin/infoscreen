@@ -1,74 +1,79 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import isNil from 'lodash/isNil';
-import findIndex from 'lodash/findIndex';
+import take from 'lodash/take';
+import map from 'lodash/map';
 
-import isVisibleElement from 'utils/isVisibleElement';
+import EMPTY_CLASS from 'globalConstants/common';
 import { BODY_HIDDEN_SCROLL, FULL_PAGE_BLOCK_TARGET } from './constants';
 
 import './style.scss';
 
-const FullPage = ({ children }) => {
+const FullPage = ({ children, onChangeTargetSection }) => {
   const containerRef = useRef(null);
+  const [indexTargetSection, setIndexTargetSection] = useState(0);
+  const [translateYValue, setTranslateYValue] = useState(0);
+
   useEffect(() => {
-    document.body.classList.add(BODY_HIDDEN_SCROLL);
-    const index = findIndex(containerRef.current.children, (element) => isVisibleElement(element));
-    containerRef.current.children[index].classList.add(FULL_PAGE_BLOCK_TARGET);
-
     const onChangeSize = () => {
-      // const sections = containerRef.current.children;
-      // const indexTarget = findIndex(sections, (element) => element.classList.contains(FULL_PAGE_BLOCK_TARGET));
+      const calculateClientHeightElementsSum = () => {
+        const sections = containerRef.current.children;
+        let sum = 0;
+        map(take(sections, indexTargetSection), (element) => {
+          sum += element.clientHeight;
+        });
+        return -sum;
+      };
 
-      // if (indexTarget === sections.length - 1) {
-
-      // }
-      // else if(!indexTarget) {
-
-      // }
-      // else {
-
-      // }
+      setTranslateYValue(calculateClientHeightElementsSum(indexTargetSection));
     };
 
     const onWheelScroll = (e) => {
-      const oldValue = parseInt(+containerRef.current.style.transform.replace('translateY(', '').replace('px)', ''));
-      const isTopScrolling = oldValue - parseInt(e.deltaY) > oldValue;
+      const isTopScrolling = translateYValue - parseInt(e.deltaY) > translateYValue;
       const sections = containerRef.current.children;
-      let indexTarget = findIndex(sections, (element) => element.classList.contains(FULL_PAGE_BLOCK_TARGET));
 
-      if ((indexTarget === sections.length - 1 && !isTopScrolling) || (!indexTarget && isTopScrolling)) {
+      if ((indexTargetSection === sections.length - 1 && !isTopScrolling) || (!indexTargetSection && isTopScrolling)) {
         return false;
       }
 
-      sections[indexTarget].classList.remove(FULL_PAGE_BLOCK_TARGET);
-      indexTarget = isTopScrolling ? indexTarget - 1 : indexTarget + 1;
-      sections[indexTarget].classList.add(FULL_PAGE_BLOCK_TARGET);
-      const { clientHeight } = sections[indexTarget];
+      setIndexTargetSection(isTopScrolling ? indexTargetSection - 1 : indexTargetSection + 1);
 
-      const newValue = isTopScrolling ? oldValue + clientHeight : oldValue - clientHeight;
-      containerRef.current.style.transform = `translateY(${newValue}px)`;
+      const { clientHeight } = sections[indexTargetSection];
+      setTranslateYValue(isTopScrolling ? translateYValue + clientHeight : translateYValue - clientHeight);
+
+      onChangeTargetSection({ targetIndex: indexTargetSection, targetRef: sections[indexTargetSection] });
       return false;
     };
 
     window.addEventListener('wheel', onWheelScroll, true);
     window.addEventListener('resize', onChangeSize);
-    window.addEventListener('orientationChange', onChangeSize);
 
     return () => {
       window.removeEventListener('wheel', onWheelScroll, true);
       window.removeEventListener('resize', onChangeSize);
-      window.removeEventListener('orientationChange', onChangeSize);
+    };
+  }, [indexTargetSection, translateYValue]);
+
+  useEffect(() => {
+    document.body.classList.add(BODY_HIDDEN_SCROLL);
+    return () => {
       document.body.classList.remove(BODY_HIDDEN_SCROLL);
-      containerRef.current.children.getElementsByClassName(FULL_PAGE_BLOCK_TARGET).item(0).classList.remove(FULL_PAGE_BLOCK_TARGET);
     };
   }, []);
 
+  const isTarget = (targetIndex, index) => targetIndex === index;
+
   return (
-    <div className="full-page" ref={containerRef}>
+    <div
+      className="full-page"
+      ref={containerRef}
+      style={{ transform: `translateY(${translateYValue}px)` }}
+    >
       {
         !isNil(children)
           ? (
-            React.Children.map(children, (element) => (
-              <section className="full-page-block">
+            React.Children.map(children, (element, index) => (
+              <section className={`full-page-block ${isTarget(indexTargetSection, index) ? FULL_PAGE_BLOCK_TARGET : EMPTY_CLASS}`}>
                 {element}
               </section>
             ))
@@ -77,6 +82,14 @@ const FullPage = ({ children }) => {
     }
     </div>
   );
+};
+
+FullPage.propTypes = {
+  onChangeTargetSection: PropTypes.func,
+};
+
+FullPage.defaultProps = {
+  onChangeTargetSection: () => {},
 };
 
 export default FullPage;

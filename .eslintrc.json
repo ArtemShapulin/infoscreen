@@ -23,6 +23,7 @@
         "react/forbid-prop-types": "off",
         "import/no-unresolved": "off",
         "react/prop-types": [2, { "ignore": ["children", "history"] }],
-        "radix": "off"
+        "radix": "off",
+        "no-unused-vars": "warn"
     }
 }
