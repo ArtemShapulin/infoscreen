@@ -1,4 +1,11 @@
+.full-page {
+    transition: all 700ms ease 0s;
+}
 
 .full-page-block {
     height: 100vh;
+}
+
+.full-page_hidden-animation {
+    transition: none;
 }
