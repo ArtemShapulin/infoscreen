@@ -2,6 +2,7 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const SassLintPlugin = require('sass-lint-webpack');
 const portFinderSync = require('portfinder-sync');
 const common = require('./webpack.common.js');
 
@@ -24,6 +25,7 @@ module.exports = merge(common, {
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
       {
@@ -32,6 +34,7 @@ module.exports = merge(common, {
           { loader: 'style-loader' },
           { loader: 'css-loader' },
           { loader: 'sass-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
       {
@@ -51,5 +54,6 @@ module.exports = merge(common, {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
+    new SassLintPlugin(),
   ],
 });

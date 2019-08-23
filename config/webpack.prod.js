@@ -10,6 +10,7 @@ const common = require('./webpack.common.js');
 
 const enableBundleAnalyzer = process.env.ENABLE_ANALYZER === 'true';
 
+
 module.exports = merge(common, {
   mode: 'production',
   devtool: 'source-map',
@@ -20,6 +21,7 @@ module.exports = merge(common, {
         use: [
           { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
       {
@@ -28,6 +30,7 @@ module.exports = merge(common, {
           { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
           { loader: 'sass-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
     ],
