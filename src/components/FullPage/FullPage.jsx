@@ -14,6 +14,19 @@ const FullPage = ({ children, onChangeTargetSection }) => {
   const [indexTargetSection, setIndexTargetSection] = useState(0);
   const [translateYValue, setTranslateYValue] = useState(0);
 
+  const changeTargetSection = ({ sections, isTopScrolling }) => {
+    if ((indexTargetSection === sections.length - 1 && !isTopScrolling) || (!indexTargetSection && isTopScrolling)) {
+      return;
+    }
+
+    setIndexTargetSection(isTopScrolling ? indexTargetSection - 1 : indexTargetSection + 1);
+
+    const { clientHeight } = sections[indexTargetSection];
+    setTranslateYValue(isTopScrolling ? translateYValue + clientHeight : translateYValue - clientHeight);
+
+    onChangeTargetSection({ targetIndex: indexTargetSection, targetRef: sections[indexTargetSection] });
+  };
+
   useEffect(() => {
     const onChangeSize = () => {
       const calculateClientHeightElementsSum = () => {
@@ -30,18 +43,7 @@ const FullPage = ({ children, onChangeTargetSection }) => {
 
     const onWheelScroll = (e) => {
       const isTopScrolling = translateYValue - parseInt(e.deltaY) > translateYValue;
-      const sections = containerRef.current.children;
-
-      if ((indexTargetSection === sections.length - 1 && !isTopScrolling) || (!indexTargetSection && isTopScrolling)) {
-        return false;
-      }
-
-      setIndexTargetSection(isTopScrolling ? indexTargetSection - 1 : indexTargetSection + 1);
-
-      const { clientHeight } = sections[indexTargetSection];
-      setTranslateYValue(isTopScrolling ? translateYValue + clientHeight : translateYValue - clientHeight);
-
-      onChangeTargetSection({ targetIndex: indexTargetSection, targetRef: sections[indexTargetSection] });
+      changeTargetSection({ sections: containerRef.current.children, isTopScrolling });
       return false;
     };
 
@@ -62,7 +64,6 @@ const FullPage = ({ children, onChangeTargetSection }) => {
   }, []);
 
   const isTarget = (targetIndex, index) => targetIndex === index;
-
   return (
     <div
       className="full-page"
