@@ -12,7 +12,7 @@ module.exports = merge(common, {
   mode: 'development',
   devtool: 'inline-source-map',
   devServer: {
-    port: port,
+    port,
     historyApiFallback: true,
     overlay: true,
     open: true,
