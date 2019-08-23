@@ -25,6 +25,7 @@ module.exports = merge(common, {
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
       {
@@ -33,6 +34,7 @@ module.exports = merge(common, {
           { loader: 'style-loader' },
           { loader: 'css-loader' },
           { loader: 'sass-loader' },
+          { loader: 'postcss-loader' },
         ],
       },
       {
