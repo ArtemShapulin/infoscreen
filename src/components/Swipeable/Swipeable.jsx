@@ -84,11 +84,6 @@ const Swipeable = ({
     setStartSwipe(false);
   };
 
-  const onElementMouseDown = (e) => {
-    const { screenX, screenY } = e;
-    console.log(screenX, screenY);
-  };
-
   return (
     <>
       {
@@ -97,7 +92,6 @@ const Swipeable = ({
             React.Children.map(children, (element) => (
               <div
                 className="swipeable"
-                onMouseDown={onElementMouseDown}
                 onTouchMove={onElementTouchMove}
                 onTouchEnd={onElementTouchEnd}
                 onTouchStart={onElementTouchStart}
