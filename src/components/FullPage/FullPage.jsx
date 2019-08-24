@@ -4,6 +4,8 @@ import isNil from 'lodash/isNil';
 import take from 'lodash/take';
 import map from 'lodash/map';
 
+import Swipeable from 'components/Swipeable/Swipeable';
+
 import EMPTY_CLASS from 'globalConstants/common';
 import { BODY_HIDDEN_SCROLL, FULL_PAGE_BLOCK_TARGET } from './constants';
 
@@ -44,7 +46,7 @@ const FullPage = ({ children, onChangeTargetSection }) => {
     const onWheelScroll = (e) => {
       const isTopScrolling = translateYValue - parseInt(e.deltaY) > translateYValue;
       changeTargetSection({ sections: containerRef.current.children, isTopScrolling });
-      return false;
+      e.stopPropagation();
     };
 
     window.addEventListener('wheel', onWheelScroll, true);
@@ -63,6 +65,14 @@ const FullPage = ({ children, onChangeTargetSection }) => {
     };
   }, []);
 
+  const onSectionSwipedDown = () => {
+    changeTargetSection({ sections: containerRef.current.children, isTopScrolling: false });
+  };
+
+  const onSectionSwipedUp = () => {
+    changeTargetSection({ sections: containerRef.current.children, isTopScrolling: true });
+  };
+
   const isTarget = (targetIndex, index) => targetIndex === index;
   return (
     <div
@@ -74,9 +84,14 @@ const FullPage = ({ children, onChangeTargetSection }) => {
         !isNil(children)
           ? (
             React.Children.map(children, (element, index) => (
-              <section className={`full-page-block ${isTarget(indexTargetSection, index) ? FULL_PAGE_BLOCK_TARGET : EMPTY_CLASS}`}>
-                {element}
-              </section>
+              <Swipeable
+                onSwipedDown={onSectionSwipedDown}
+                onSwipedUp={onSectionSwipedUp}
+              >
+                <section className={`full-page-block ${isTarget(indexTargetSection, index) ? FULL_PAGE_BLOCK_TARGET : EMPTY_CLASS}`}>
+                  {element}
+                </section>
+              </Swipeable>
             ))
           )
           : null
