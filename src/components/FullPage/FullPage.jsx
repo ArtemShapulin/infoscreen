@@ -4,6 +4,8 @@ import isNil from 'lodash/isNil';
 import take from 'lodash/take';
 import map from 'lodash/map';
 
+import Swipeable from 'components/Swipeable/Swipeable';
+
 import EMPTY_CLASS from 'globalConstants/common';
 import { BODY_HIDDEN_SCROLL, FULL_PAGE_BLOCK_TARGET } from './constants';
 
@@ -14,35 +16,38 @@ const FullPage = ({ children, onChangeTargetSection }) => {
   const [indexTargetSection, setIndexTargetSection] = useState(0);
   const [translateYValue, setTranslateYValue] = useState(0);
 
+  const calculateClientHeightElementsSum = () => {
+    const sections = containerRef.current.children;
+    let sum = 0;
+    map(take(sections, indexTargetSection), (element) => {
+      sum += element.clientHeight;
+    });
+    return -sum;
+  };
+
+  const changeTargetSection = ({ sections, isTopScrolling }) => {
+    if ((indexTargetSection === sections.length - 1 && !isTopScrolling) || (!indexTargetSection && isTopScrolling)) {
+      return;
+    }
+
+    setIndexTargetSection(isTopScrolling ? indexTargetSection - 1 : indexTargetSection + 1);
+
+    const { clientHeight } = sections[indexTargetSection];
+    const newTranslateYValue = isTopScrolling ? translateYValue + clientHeight : translateYValue - clientHeight;
+
+    setTranslateYValue(newTranslateYValue);
+    onChangeTargetSection({ targetIndex: indexTargetSection, targetRef: sections[indexTargetSection] });
+  };
+
   useEffect(() => {
     const onChangeSize = () => {
-      const calculateClientHeightElementsSum = () => {
-        const sections = containerRef.current.children;
-        let sum = 0;
-        map(take(sections, indexTargetSection), (element) => {
-          sum += element.clientHeight;
-        });
-        return -sum;
-      };
-
       setTranslateYValue(calculateClientHeightElementsSum(indexTargetSection));
     };
 
     const onWheelScroll = (e) => {
       const isTopScrolling = translateYValue - parseInt(e.deltaY) > translateYValue;
-      const sections = containerRef.current.children;
-
-      if ((indexTargetSection === sections.length - 1 && !isTopScrolling) || (!indexTargetSection && isTopScrolling)) {
-        return false;
-      }
-
-      setIndexTargetSection(isTopScrolling ? indexTargetSection - 1 : indexTargetSection + 1);
-
-      const { clientHeight } = sections[indexTargetSection];
-      setTranslateYValue(isTopScrolling ? translateYValue + clientHeight : translateYValue - clientHeight);
-
-      onChangeTargetSection({ targetIndex: indexTargetSection, targetRef: sections[indexTargetSection] });
-      return false;
+      changeTargetSection({ sections: containerRef.current.children, isTopScrolling });
+      e.stopPropagation();
     };
 
     window.addEventListener('wheel', onWheelScroll, true);
@@ -61,6 +66,19 @@ const FullPage = ({ children, onChangeTargetSection }) => {
     };
   }, []);
 
+  const onSectionSwipedDown = () => {
+    changeTargetSection({ sections: containerRef.current.children, isTopScrolling: false });
+  };
+
+  const onSectionSwipedUp = () => {
+    changeTargetSection({ sections: containerRef.current.children, isTopScrolling: true });
+  };
+
+  const onSectionSwipingUp = (e) => {
+    // const { y1, y2 } = e;
+    // setTranslateYValue(translateYValue + Math.abs(y1 - y2));
+  };
+
   const isTarget = (targetIndex, index) => targetIndex === index;
 
   return (
@@ -73,9 +91,16 @@ const FullPage = ({ children, onChangeTargetSection }) => {
         !isNil(children)
           ? (
             React.Children.map(children, (element, index) => (
-              <section className={`full-page-block ${isTarget(indexTargetSection, index) ? FULL_PAGE_BLOCK_TARGET : EMPTY_CLASS}`}>
-                {element}
-              </section>
+              <Swipeable
+                turnOnClick
+                onSwipedDown={onSectionSwipedDown}
+                onSwipedUp={onSectionSwipedUp}
+                onSwipingUp={onSectionSwipingUp}
+              >
+                <section className={`full-page-block ${isTarget(indexTargetSection, index) ? FULL_PAGE_BLOCK_TARGET : EMPTY_CLASS}`}>
+                  {element}
+                </section>
+              </Swipeable>
             ))
           )
           : null
