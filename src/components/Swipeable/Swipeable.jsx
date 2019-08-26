@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import isNil from 'lodash/isNil';
 import pickBy from 'lodash/pickBy';
@@ -74,18 +74,10 @@ const Swipeable = ({
   };
 
   const onElementMousemove = (e) => {
+    if (!mousePressed) return;
     const { screenX, screenY } = e;
     onElementTouchMove({ screenX, screenY });
   };
-
-  useEffect(() => {
-    if (mousePressed) {
-      window.addEventListener('mousemove', onElementMousemove);
-    }
-    return () => {
-      window.removeEventListener('mousemove', onElementMousemove);
-    };
-  }, [mousePressed]);
 
   const onElementTouchEnd = () => {
     if (startSwipe) {
@@ -124,6 +116,7 @@ const Swipeable = ({
                 draggable={false}
                 onDragStart={(e) => { e.preventDefault(); }}
                 onMouseUp={onElementMouseUp}
+                onMouseMove={onElementMousemove}
                 onMouseDown={onElementMouseDown}
                 onTouchMove={onElementTouchMove}
                 onTouchEnd={onElementTouchEnd}
