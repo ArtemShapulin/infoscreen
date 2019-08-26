@@ -85,6 +85,7 @@ const FullPage = ({ children, onChangeTargetSection }) => {
           ? (
             React.Children.map(children, (element, index) => (
               <Swipeable
+                turnOnClick
                 onSwipedDown={onSectionSwipedDown}
                 onSwipedUp={onSectionSwipedUp}
               >

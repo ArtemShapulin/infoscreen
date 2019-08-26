@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import isNil from 'lodash/isNil';
 import pickBy from 'lodash/pickBy';
@@ -21,8 +21,10 @@ const Swipeable = ({
   onSwipingUp,
   onSwipingRight,
   onSwipingLeft,
+  turnOnClick,
 }) => {
   const [startSwipe, setStartSwipe] = useState(false);
+  const [mousePressed, setMousePressed] = useState(false);
   const [dataVectors, setDataVectors] = useState({
     x1: null, x2: null, y1: null, y2: null,
   });
@@ -42,8 +44,8 @@ const Swipeable = ({
   const onElementTouchMove = (e) => {
     const nextDataVectors = {
       ...dataVectors,
-      x2: e.touches[0].screenX,
-      y2: e.touches[0].screenY,
+      x2: e.screenX || e.touches[0].screenX,
+      y2: e.screenY || e.touches[0].screenY,
     };
     const minDistance = calculateMinDistance({
       screenX: window.screen.availWidth, screenY: window.screen.availHeight, coefficientX: COEFFICIENT_X, coefficientY: COEFFICIENT_Y,
@@ -57,7 +59,6 @@ const Swipeable = ({
         callbackNameSpace: SWIPING_VECTOR,
         callbacks: swipingCallbacks,
       });
-
       callback({ ...pickBy(dataVectors, (value, key) => key.replace(/[^a-z]/g, '') === vector) });
     }
 
@@ -67,10 +68,26 @@ const Swipeable = ({
   const onElementTouchStart = (e) => {
     setDataVectors({
       ...dataVectors,
-      x1: e.touches[0].screenX,
-      y1: e.touches[0].screenY,
+      x1: e.screenX || e.touches[0].screenX,
+      y1: e.screenY || e.touches[0].screenY,
     });
   };
+
+  const onElementMousemove = (e) => {
+    const { screenX, screenY } = e;
+    onElementTouchMove({ screenX, screenY });
+  };
+
+  useEffect(() => {
+    if (mousePressed) {
+      window.addEventListener('mousemove', onElementMousemove);
+    }
+    return () => {
+      if (!mousePressed) {
+        window.removeEventListener('mousemove', onElementMousemove);
+      }
+    };
+  }, [mousePressed]);
 
   const onElementTouchEnd = () => {
     if (startSwipe) {
@@ -84,6 +101,20 @@ const Swipeable = ({
     setStartSwipe(false);
   };
 
+
+  const onElementMouseDown = (e) => {
+    if (!turnOnClick) return;
+    const { screenX, screenY } = e;
+    onElementTouchStart({ screenX, screenY });
+    setMousePressed(true);
+  };
+
+  const onElementMouseUp = () => {
+    if (!turnOnClick) return;
+    onElementTouchEnd();
+    setMousePressed(false);
+  };
+
   return (
     <>
       {
@@ -92,6 +123,10 @@ const Swipeable = ({
             React.Children.map(children, (element) => (
               <div
                 className="swipeable"
+                draggable={false}
+                onDragStart={(e) => { e.preventDefault(); }}
+                onMouseUp={onElementMouseUp}
+                onMouseDown={onElementMouseDown}
                 onTouchMove={onElementTouchMove}
                 onTouchEnd={onElementTouchEnd}
                 onTouchStart={onElementTouchStart}
@@ -115,6 +150,7 @@ Swipeable.propTypes = {
   onSwipingUp: PropTypes.func,
   onSwipingRight: PropTypes.func,
   onSwipingLeft: PropTypes.func,
+  turnOnClick: PropTypes.bool,
 };
 
 Swipeable.defaultProps = {
@@ -126,6 +162,7 @@ Swipeable.defaultProps = {
   onSwipingUp: () => {},
   onSwipingRight: () => {},
   onSwipingLeft: () => {},
+  turnOnClick: false,
 };
 
 export default Swipeable;
