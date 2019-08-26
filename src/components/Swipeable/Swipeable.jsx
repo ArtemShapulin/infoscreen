@@ -59,7 +59,7 @@ const Swipeable = ({
         callbackNameSpace: SWIPING_VECTOR,
         callbacks: swipingCallbacks,
       });
-      callback({ ...pickBy(dataVectors, (value, key) => key.replace(/[^a-z]/g, '') === vector) });
+      callback({ ...pickBy(nextDataVectors, (value, key) => key.replace(/[^a-z]/g, '') === vector) });
     }
 
     setStartSwipe(isMinDistance);
@@ -83,9 +83,7 @@ const Swipeable = ({
       window.addEventListener('mousemove', onElementMousemove);
     }
     return () => {
-      if (!mousePressed) {
-        window.removeEventListener('mousemove', onElementMousemove);
-      }
+      window.removeEventListener('mousemove', onElementMousemove);
     };
   }, [mousePressed]);
 
