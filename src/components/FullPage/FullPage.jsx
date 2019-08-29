@@ -39,22 +39,19 @@ const FullPage = ({ children, onChangeTargetSection }) => {
     onChangeTargetSection({ targetIndex: indexTargetSection, targetRef: sections[indexTargetSection] });
   };
 
+  const onWheelScroll = (e) => {
+    const isTopScrolling = translateYValue - parseInt(e.deltaY) > translateYValue;
+    changeTargetSection({ sections: containerRef.current.children, isTopScrolling });
+    e.stopPropagation();
+  };
+
   useEffect(() => {
     const onChangeSize = () => {
       setTranslateYValue(calculateClientHeightElementsSum(indexTargetSection));
     };
-
-    const onWheelScroll = (e) => {
-      const isTopScrolling = translateYValue - parseInt(e.deltaY) > translateYValue;
-      changeTargetSection({ sections: containerRef.current.children, isTopScrolling });
-      e.stopPropagation();
-    };
-
-    window.addEventListener('wheel', onWheelScroll, true);
     window.addEventListener('resize', onChangeSize);
 
     return () => {
-      window.removeEventListener('wheel', onWheelScroll, true);
       window.removeEventListener('resize', onChangeSize);
     };
   }, [indexTargetSection, translateYValue]);
@@ -94,6 +91,7 @@ const FullPage = ({ children, onChangeTargetSection }) => {
     <div
       className="full-page"
       ref={containerRef}
+      onWheel={onWheelScroll}
       style={{ transform: `translateY(${translateYValue}px)` }}
     >
       {
