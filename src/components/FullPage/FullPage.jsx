@@ -75,8 +75,17 @@ const FullPage = ({ children, onChangeTargetSection }) => {
   };
 
   const onSectionSwipingUp = (e) => {
-    // const { y1, y2 } = e;
-    // setTranslateYValue(translateYValue + Math.abs(y1 - y2));
+    const { y1, y2 } = e;
+    console.log(y1, y2);
+    const newTranslateYValue = Math.abs(y1 - y2);
+    setTranslateYValue(newTranslateYValue);
+  };
+
+  const onSectionSwipingDown = (e) => {
+    const { y1, y2 } = e;
+    console.log(y1, y2);
+    const newTranslateYValue = y2 - y1;
+    setTranslateYValue(newTranslateYValue);
   };
 
   const isTarget = (targetIndex, index) => targetIndex === index;
@@ -96,6 +105,7 @@ const FullPage = ({ children, onChangeTargetSection }) => {
                 onSwipedDown={onSectionSwipedDown}
                 onSwipedUp={onSectionSwipedUp}
                 onSwipingUp={onSectionSwipingUp}
+                onSwipingDown={onSectionSwipingDown}
               >
                 <section className={`full-page-block ${isTarget(indexTargetSection, index) ? FULL_PAGE_BLOCK_TARGET : EMPTY_CLASS}`}>
                   {element}
