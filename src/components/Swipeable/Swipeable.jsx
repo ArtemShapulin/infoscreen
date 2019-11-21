@@ -76,6 +76,7 @@ const Swipeable = ({
   const onElementMousemove = (e) => {
     if (!mousePressed) return;
     const { screenX, screenY } = e;
+    console.log({ screenX, screenY });
     onElementTouchMove({ screenX, screenY });
   };
 
